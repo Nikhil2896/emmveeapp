@@ -1,7 +1,7 @@
 import React from 'react';
 import { StyleSheet, View, Text } from 'react-native';
 
-const CreatePost = () => {
+const CreatePost: React.FC = () => {
   return (
     <View style={styles.container}>
       <Text>CreatePost Screen</Text>

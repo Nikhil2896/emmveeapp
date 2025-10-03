@@ -1,10 +1,11 @@
-const Theme = {
+export const Theme = {
   colors: {
     primaryDark: '#557B83',
     primaryColor: '#39AEA9',
-    primaryLight: '#E5EFC1',
+    primaryLight: '#f0f6ddff',
     white: '#FFFFFF',
     black: '#000000',
+    error: '#FF4747',
   },
 
   fonts: {
@@ -27,5 +28,8 @@ const Theme = {
     xLarge: 24,
     heading: 40,
   },
-};
+} as const;
+
+export type ThemeType = typeof Theme;
+
 export default Theme;

@@ -1,7 +1,7 @@
 import React from 'react';
 import { StyleSheet, View, Text } from 'react-native';
 
-const Home = () => {
+const Home: React.FC = () => {
   return (
     <View style={styles.container}>
       <Text>Home Screen</Text>

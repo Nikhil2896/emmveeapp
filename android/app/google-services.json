@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "876008904955",
+    "project_id": "emmveeapp",
+    "storage_bucket": "emmveeapp.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:876008904955:android:a7cc9e8c7b90061886b85e",
+        "android_client_info": {
+          "package_name": "com.emmveeapp"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyApvdkSRHulJnic8tfMOaQVGEjY48nfnSc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

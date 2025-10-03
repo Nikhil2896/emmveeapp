@@ -1,19 +1,13 @@
 import React from 'react';
-import { View, StyleSheet } from 'react-native';
 import AppNavigation from './source/navigation/AppNavigation';
+import { AuthProvider } from './source/controller/AuthProvider';
 
 const App = () => {
   return (
-    <View style={styles.container}>
+    <AuthProvider>
       <AppNavigation />
-    </View>
+    </AuthProvider>
   );
 };
 
 export default App;
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-});

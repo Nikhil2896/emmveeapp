@@ -1,7 +1,7 @@
 import React from 'react';
 import { StyleSheet, View, Text } from 'react-native';
 
-const ViewPost = () => {
+const ViewPost: React.FC = () => {
   return (
     <View style={styles.container}>
       <Text>ViewPost Screen</Text>

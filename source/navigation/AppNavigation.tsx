@@ -12,12 +12,43 @@ import CreatePost from '../screens/CreatePost';
 import Profile from '../screens/Profile';
 import Posts from '../screens/Posts';
 import ViewPost from '../screens/ViewPost';
+import { getApps, getApp, initializeApp } from 'firebase/app';
 
-const Tab = createBottomTabNavigator();
-const Stack = createStackNavigator();
+const config = {
+  databaseURL: 'https://eazy-navigation-default-rtdb.firebaseio.com/',
+  storageBucket: 'gs://eazy-navigation.appspot.com',
+  projectId: 'eazy-navigation',
+};
 
-const AppNavigation = () => {
-  const MainStack = () => {
+if (!getApps().length) {
+  initializeApp(config);
+} else {
+  getApp();
+}
+
+type RootStackParamList = {
+  [Routes.Login]: undefined;
+  [Routes.MainStack]: undefined;
+  [Routes.AdditionalStack]: undefined;
+};
+
+type MainTabParamList = {
+  [Routes.Home]: undefined;
+  [Routes.MyPosts]: undefined;
+};
+
+type AdditionalStackParamList = {
+  [Routes.CreatePost]: undefined;
+  [Routes.Profile]: undefined;
+  [Routes.ViewPost]: undefined;
+};
+
+const Tab = createBottomTabNavigator<MainTabParamList>();
+const Stack = createStackNavigator<RootStackParamList>();
+const Additional = createStackNavigator<AdditionalStackParamList>();
+
+const AppNavigation: React.FC = () => {
+  const MainStack: React.FC = () => {
     return (
       <View style={styles.tabBarView}>
         <Tab.Navigator
@@ -26,7 +57,7 @@ const AppNavigation = () => {
             tabBarActiveTintColor: Theme.colors.primaryColor,
             tabBarInactiveTintColor: Theme.colors.primaryLight,
             tabBarStyle: styles.tabBarStyles,
-            tabBarIcon: ({ focused, color, size }) => {
+            tabBarIcon: ({ color, size }) => {
               let iconName: string = 'help-circle';
               switch (route.name) {
                 case Routes.Home:
@@ -43,73 +74,57 @@ const AppNavigation = () => {
           <Tab.Screen
             name={Routes.Home}
             component={Home}
-            options={{
-              headerShown: false,
-            }}
+            options={{ headerShown: false }}
           />
           <Tab.Screen
             name={Routes.MyPosts}
             component={Posts}
-            options={{
-              headerShown: false,
-            }}
+            options={{ headerShown: false }}
           />
         </Tab.Navigator>
       </View>
     );
   };
 
-  const AdditionalStack = () => {
+  const AdditionalStack: React.FC = () => {
     return (
-      <Stack.Navigator>
-        <Stack.Screen
+      <Additional.Navigator>
+        <Additional.Screen
           name={Routes.CreatePost}
           component={CreatePost}
-          options={{
-            headerShown: false,
-          }}
+          options={{ headerShown: false }}
         />
-        <Stack.Screen
+        <Additional.Screen
           name={Routes.Profile}
           component={Profile}
-          options={{
-            headerShown: false,
-          }}
+          options={{ headerShown: false }}
         />
-        <Stack.Screen
+        <Additional.Screen
           name={Routes.ViewPost}
           component={ViewPost}
-          options={{
-            headerShown: false,
-          }}
+          options={{ headerShown: false }}
         />
-      </Stack.Navigator>
+      </Additional.Navigator>
     );
   };
 
   return (
     <NavigationContainer>
-      <Stack.Navigator initialRouteName={true ? Routes.Login : Routes.Home}>
+      <Stack.Navigator initialRouteName={Routes.Login}>
         <Stack.Screen
           name={Routes.Login}
           component={Login}
-          options={{
-            headerShown: false,
-          }}
+          options={{ headerShown: false }}
         />
         <Stack.Screen
           name={Routes.MainStack}
           component={MainStack}
-          options={{
-            headerShown: false,
-          }}
+          options={{ headerShown: false }}
         />
         <Stack.Screen
           name={Routes.AdditionalStack}
           component={AdditionalStack}
-          options={{
-            headerShown: false,
-          }}
+          options={{ headerShown: false }}
         />
       </Stack.Navigator>
     </NavigationContainer>
