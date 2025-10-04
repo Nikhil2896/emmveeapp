@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useContext, useState, useEffect } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
@@ -13,6 +13,8 @@ import Profile from '../screens/Profile';
 import Posts from '../screens/Posts';
 import ViewPost from '../screens/ViewPost';
 import { getApps, getApp, initializeApp } from 'firebase/app';
+import { AuthContext } from '../controller/AuthProvider';
+import auth, { FirebaseAuthTypes } from '@react-native-firebase/auth';
 
 const config = {
   databaseURL: 'https://eazy-navigation-default-rtdb.firebaseio.com/',
@@ -48,6 +50,21 @@ const Stack = createStackNavigator<RootStackParamList>();
 const Additional = createStackNavigator<AdditionalStackParamList>();
 
 const AppNavigation: React.FC = () => {
+  const { user, setUser } = useContext(AuthContext);
+  const [initializing, setInitializing] = useState<boolean>(true);
+
+  const onAuthStateChanged = (user: FirebaseAuthTypes.User | null) => {
+    setUser(user);
+    if (initializing) setInitializing(false);
+  };
+
+  useEffect(() => {
+    const subscriber = auth().onAuthStateChanged(onAuthStateChanged);
+    return subscriber;
+  }, [initializing]);
+
+  if (initializing) return null;
+
   const MainStack: React.FC = () => {
     return (
       <View style={styles.tabBarView}>
@@ -110,7 +127,9 @@ const AppNavigation: React.FC = () => {
 
   return (
     <NavigationContainer>
-      <Stack.Navigator initialRouteName={Routes.Login}>
+      <Stack.Navigator
+        initialRouteName={user ? Routes.MainStack : Routes.Login}
+      >
         <Stack.Screen
           name={Routes.Login}
           component={Login}

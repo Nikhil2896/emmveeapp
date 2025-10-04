@@ -6,8 +6,6 @@ import {
   Text,
   ScrollView,
   Modal,
-  Linking,
-  Button,
   TouchableOpacity,
 } from 'react-native';
 import { AuthContext } from '../controller/AuthProvider';
@@ -18,7 +16,8 @@ import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 
 type RootStackParamList = {
   [Routes.Home]: { screen?: string };
-  [Routes.Login]: undefined;
+  [Routes.Login]: { screen?: string };
+  [Routes.MainStack]: { screen?: string };
 };
 
 type LoginScreenNavigationProp = NativeStackNavigationProp<
@@ -42,7 +41,7 @@ const Login: React.FC<LoginProps> = props => {
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [openRegister, setOpenRegister] = useState<boolean>(false);
 
-  const { login, passwordReset } = useContext(AuthContext);
+  const { login } = useContext(AuthContext);
 
   useEffect(() => {
     setDisabled(!(email && password));
@@ -65,6 +64,9 @@ const Login: React.FC<LoginProps> = props => {
         case 'auth/too-many-requests':
           setErrorMessage('Too many attempts. Account Temporarily blocked');
           break;
+        case 'auth/invalid-credential':
+          setErrorMessage('Invalid credentials');
+          break;
         case 'auth/invalid-email':
           setErrorMessage('Invalid Email ID');
           break;
@@ -77,39 +79,7 @@ const Login: React.FC<LoginProps> = props => {
       setErrorMessage(null);
       setLoading(false);
       setDisabled(false);
-      // props.navigation.replace(Routes.Login, { screen: SEARCH });
-    }
-  };
-
-  const resetPassword = async () => {
-    setErrorMessage(null);
-    if (!email) {
-      setErrorMessage('Please enter your email address to reset your password');
-      return;
-    }
-
-    const response = await passwordReset(email);
-    if (response) {
-      const error = response as FirebaseAuthError;
-      switch (error.code) {
-        case 'auth/user-not-found':
-          setErrorMessage('Email ID not registered');
-          break;
-        case 'auth/too-many-requests':
-          setErrorMessage(
-            'Too many attempts. Account Temporarily blocked. Try resetting password',
-          );
-          break;
-        case 'auth/invalid-email':
-          setErrorMessage('Invalid Email ID');
-          break;
-        default:
-          setErrorMessage('Unexpected error! Please try again later');
-      }
-    } else {
-      setErrorMessage(
-        'Password reset email sent to your registered email address',
-      );
+      props.navigation.replace(Routes.MainStack, { screen: Routes.Home });
     }
   };
 
@@ -117,7 +87,7 @@ const Login: React.FC<LoginProps> = props => {
   const closeRegister = () => setOpenRegister(false);
   const registered = () => {
     setOpenRegister(false);
-    // props.navigation.replace(HOME, { screen: SEARCH });
+    props.navigation.replace(Routes.MainStack, { screen: Routes.Home });
   };
 
   return (
@@ -181,10 +151,6 @@ const Login: React.FC<LoginProps> = props => {
           <Text onPress={newUser} style={styles.links}>
             New user? Click here to register
           </Text>
-
-          <Text onPress={resetPassword} style={styles.links}>
-            Forgot password?
-          </Text>
         </View>
       </ScrollView>
 
@@ -194,7 +160,6 @@ const Login: React.FC<LoginProps> = props => {
         onRequestClose={closeRegister}
         transparent={true}
       >
-        {/* <Header title="Register" close={closeRegister} /> */}
         <RegisterUser
           from={Routes.Login}
           success={registered}

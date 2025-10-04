@@ -12,7 +12,6 @@ interface AuthContextType {
     name: string,
     mobile?: string,
   ) => Promise<void | Error>;
-  passwordReset: (email: string) => Promise<void | Error>;
   logout: () => Promise<void>;
 }
 
@@ -86,15 +85,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     }
   };
 
-  const passwordReset = async (email: string): Promise<void | Error> => {
-    try {
-      await auth().sendPasswordResetEmail(email);
-    } catch (e: any) {
-      console.log('Password Reset Error:', e);
-      return e;
-    }
-  };
-
   const logout = async (): Promise<void> => {
     try {
       await auth().signOut();
@@ -110,7 +100,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         setUser,
         login,
         register,
-        passwordReset,
         logout,
       }}
     >
