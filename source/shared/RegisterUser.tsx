@@ -72,36 +72,38 @@ const RegisterUser: React.FC<RegisterUserProps> = props => {
     setModalLoading(true);
     setDisabled(true);
     setErrorMessage(null);
-    register(email, password, name, mobile).then((response: any) => {
-      if (response) {
-        const errorCode = response.code;
-        switch (errorCode) {
-          case 'auth/weak-password':
-            setErrorMessage(
-              'Password too weak. Please choose a strong password',
-            );
-            break;
-          case 'auth/email-already-in-use':
-            setErrorMessage('Entered email already in use');
-            break;
-          case 'auth/invalid-email':
-            setErrorMessage('Invalid Email ID');
-            break;
-          default:
-            setErrorMessage('Unexpected error! Please try again later');
+    register(email.toLowerCase(), password, name, mobile).then(
+      (response: any) => {
+        if (response) {
+          const errorCode = response.code;
+          switch (errorCode) {
+            case 'auth/weak-password':
+              setErrorMessage(
+                'Password too weak. Please choose a strong password',
+              );
+              break;
+            case 'auth/email-already-in-use':
+              setErrorMessage('Entered email already in use');
+              break;
+            case 'auth/invalid-email':
+              setErrorMessage('Invalid Email ID');
+              break;
+            default:
+              setErrorMessage('Unexpected error! Please try again later');
+          }
+          setDisabled(false);
+          setModalLoading(false);
+        } else {
+          props.success();
+          setErrorMessage(null);
+          setDisabled(false);
+          setModalLoading(false);
+          if (!props.city && props.setReload) {
+            props.setReload(true);
+          }
         }
-        setDisabled(false);
-        setModalLoading(false);
-      } else {
-        props.success();
-        setErrorMessage(null);
-        setDisabled(false);
-        setModalLoading(false);
-        if (!props.city && props.setReload) {
-          props.setReload(true);
-        }
-      }
-    });
+      },
+    );
   };
 
   const updateFirebase = async () => {

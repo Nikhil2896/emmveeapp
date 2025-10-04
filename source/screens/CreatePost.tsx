@@ -6,6 +6,8 @@ import {
   ScrollView,
   TouchableOpacity,
   TextInput,
+  Modal,
+  ActivityIndicator,
 } from 'react-native';
 import Theme from '../constants/Theme';
 import ModelLoading from '../shared/ModalLoading';
@@ -19,6 +21,7 @@ import type { StackNavigationProp } from '@react-navigation/stack';
 import { AuthContext } from '../controller/AuthProvider';
 import MapView, { PROVIDER_GOOGLE, Marker } from 'react-native-maps';
 import { requestLocationPermission } from '../controller/Permissions';
+import { firebase } from '@react-native-firebase/database';
 
 interface CreatePostProps {
   route: RouteProp<
@@ -67,6 +70,11 @@ const CreatePost: React.FC<CreatePostProps> = ({ route }) => {
   const navigation = useNavigation<StackNavigationProp<any>>();
   const map = useRef<any>(null);
   const [editable, setEditable] = useState<boolean>(true);
+  const [modalVisible, setModalVisible] = useState<boolean>(false);
+  const [loadModal, setLoadModal] = useState<boolean>(false);
+  const [userFound, setUserFound] = useState<boolean>(false);
+  const [searchText, setSearchText] = useState<string>('');
+  const [searchError, setSearchError] = useState<string>('');
   const [loading, setLoading] = useState<boolean>(false);
   const [eventName, setEventName] = useState<string>('');
   const [disabled, setDisabled] = useState<boolean>(true);
@@ -259,6 +267,40 @@ const CreatePost: React.FC<CreatePostProps> = ({ route }) => {
     }
   };
 
+  const onSearch = async () => {
+    setSearchError('');
+    setUserFound(false);
+    if (searchText) {
+      setLoadModal(true);
+      await firebase
+        .database()
+        .ref('users')
+        .orderByChild('email')
+        .equalTo(searchText.toLowerCase())
+        .once('value')
+        .then(snapshot => {
+          if (snapshot.exists()) {
+            snapshot.forEach(childSnapshot => {
+              const userData = childSnapshot.val();
+              console.log('User found:', userData);
+              setSearchError(userData.name);
+              setUserFound(true);
+            });
+          } else {
+            setSearchError('Unable to find a user with the email provided');
+            setUserFound(false);
+          }
+          setLoadModal(false);
+        })
+        .catch(error => {
+          console.error('Error fetching user:', error);
+          setSearchError('Unexpected error, please try again later');
+          setLoadModal(false);
+          setUserFound(false);
+        });
+    }
+  };
+
   const SubmitButton: React.FC<SubmitButtonProps> = ({
     submitText,
     onPress,
@@ -288,6 +330,83 @@ const CreatePost: React.FC<CreatePostProps> = ({ route }) => {
     );
   };
 
+  const searchView = () => (
+    <View style={styles.searchView}>
+      <TextInput
+        style={styles.searchtextInput}
+        onChangeText={setSearchText}
+        value={searchText}
+        placeholder="Search with email"
+        placeholderTextColor={Theme.colors.placeHolder}
+        maxLength={25}
+        selectionColor={Theme.colors.primaryColor}
+      />
+      <Icon
+        name="magnify"
+        size={30}
+        color={searchText ? Theme.colors.primaryDark : Theme.colors.placeHolder}
+        style={styles.searchIcon}
+        onPress={onSearch}
+      />
+    </View>
+  );
+
+  const inviteModal = () => {
+    return (
+      <Modal
+        animationType="fade"
+        transparent={true}
+        visible={modalVisible}
+        onRequestClose={() => {
+          setModalVisible(!modalVisible);
+          setSearchError('');
+          setSearchText('');
+        }}
+      >
+        <View style={styles.modalContainer}>
+          <View style={styles.modalView}>
+            {searchView()}
+            {loadModal ? (
+              <ActivityIndicator
+                size="small"
+                color={Theme.colors.primaryColor}
+                style={{ marginTop: 90 }}
+              />
+            ) : (
+              <>
+                <Text style={styles.searchText}>{searchError}</Text>
+                {userFound && (
+                  <TouchableOpacity
+                    style={{
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      marginTop: 20,
+                    }}
+                  >
+                    <Text
+                      style={{
+                        textAlign: 'center',
+                        color: Theme.colors.primaryLight,
+                        fontSize: Theme.fontSize.medium,
+                        paddingVertical: 10,
+                        backgroundColor: Theme.colors.primaryColor,
+                        paddingHorizontal: 30,
+                        elevation: 5,
+                        borderRadius: 5,
+                      }}
+                    >
+                      Invite
+                    </Text>
+                  </TouchableOpacity>
+                )}
+              </>
+            )}
+          </View>
+        </View>
+      </Modal>
+    );
+  };
+
   return (
     <>
       {locationStatus ? (
@@ -314,7 +433,6 @@ const CreatePost: React.FC<CreatePostProps> = ({ route }) => {
               />
             )}
           </View>
-
           <View style={styles.container}>
             <View style={{ width: '100%', marginTop: 30 }}>
               <TextInput
@@ -403,6 +521,15 @@ const CreatePost: React.FC<CreatePostProps> = ({ route }) => {
               )}
             </View>
           </View>
+          {!route.params.create && route.params.editable && (
+            <TouchableOpacity
+              style={styles.inviteButton}
+              onPress={() => setModalVisible(true)}
+            >
+              <Text style={styles.inviteText}>Invite a Friend</Text>
+            </TouchableOpacity>
+          )}
+          {inviteModal()}
         </ScrollView>
       ) : (
         <View style={styles.locationOff}>
@@ -519,5 +646,55 @@ const styles = StyleSheet.create({
   map: {
     height: '100%',
     width: '100%',
+  },
+  inviteButton: {
+    backgroundColor: Theme.colors.primaryDark,
+    marginHorizontal: 20,
+    marginVertical: 10,
+    borderRadius: 4,
+  },
+  inviteText: {
+    textAlign: 'center',
+    color: Theme.colors.primaryLight,
+    fontSize: Theme.fontSize.medium,
+    paddingVertical: 10,
+  },
+  searchtextInput: {
+    borderWidth: 2,
+    borderRadius: 100,
+    borderColor: Theme.colors.primaryColor,
+    paddingHorizontal: 15,
+    color: Theme.colors.primaryDark,
+    fontFamily: Theme.fonts.regular,
+    fontSize: Theme.fontSize.medium,
+  },
+  searchIcon: {
+    position: 'absolute',
+    right: 15,
+    top: 11,
+  },
+  searchView: {
+    marginHorizontal: 20,
+    marginTop: 30,
+    marginBottom: 10,
+    borderRadius: 100,
+    elevation: 5,
+    backgroundColor: Theme.colors.white,
+  },
+  modalContainer: {
+    justifyContent: 'center',
+    flex: 1,
+  },
+  modalView: {
+    backgroundColor: Theme.colors.primaryLight,
+    borderRadius: 6,
+    marginHorizontal: 25,
+    elevation: 5,
+    height: 300,
+  },
+  searchText: {
+    textAlign: 'center',
+    color: Theme.colors.primaryColor,
+    marginTop: 80,
   },
 });
