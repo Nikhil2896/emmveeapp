@@ -102,7 +102,8 @@ const Home: React.FC<HomeProps> = props => {
 
   const onPostClicked = async (data: PostItem) => {
     props.navigation.navigate(Routes.AdditionalStack, {
-      screen: data.userId === user?.uid ? Routes.CreatePost : Routes.ViewPost,
+      // screen: data.userId === user?.uid ? Routes.CreatePost : Routes.ViewPost,
+      screen: Routes.CreatePost,
       params: {
         from: Routes.Home,
         editable: data.userId === user?.uid,

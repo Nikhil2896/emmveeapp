@@ -66,6 +66,7 @@ interface CoordinateEvent {
 const CreatePost: React.FC<CreatePostProps> = ({ route }) => {
   const navigation = useNavigation<StackNavigationProp<any>>();
   const map = useRef<any>(null);
+  const [editable, setEditable] = useState<boolean>(true);
   const [loading, setLoading] = useState<boolean>(false);
   const [eventName, setEventName] = useState<string>('');
   const [disabled, setDisabled] = useState<boolean>(true);
@@ -124,7 +125,20 @@ const CreatePost: React.FC<CreatePostProps> = ({ route }) => {
         latitudeDelta: 0.0922,
         longitudeDelta: 0.0421,
       });
-    } else if (routeData.create && !routeData.editable) {
+    } else if (!routeData.create && !routeData.editable) {
+      const timestamp = new Date(parseInt(routeData.data.eventTimeStamp, 10));
+      setDescription(routeData.data.description);
+      setEventName(routeData.data.title);
+      setLact(routeData.data.lactitude);
+      setLongit(routeData.data.longitude);
+      onChange(undefined, timestamp);
+      setRegion({
+        latitude: routeData.data.lactitude,
+        longitude: routeData.data.longitude,
+        latitudeDelta: 0.0922,
+        longitudeDelta: 0.0421,
+      });
+      setEditable(false);
     }
   }, [refresh]);
 
@@ -152,20 +166,22 @@ const CreatePost: React.FC<CreatePostProps> = ({ route }) => {
   };
 
   const onChange = (_event?: DateTimePickerEvent, selectedDate?: Date) => {
-    if (selectedDate instanceof Date) {
-      setShow(false);
-      setDate(selectedDate);
-      setDateOfEvent(selectedDate.toLocaleDateString());
-      setTimeOfEvent(
-        selectedDate.toLocaleTimeString([], {
-          hour: '2-digit',
-          minute: '2-digit',
-          hour12: true,
-        }),
-      );
-      setEventTimeStamp(convertToDateMs(selectedDate));
-    } else {
-      console.error('Invalid date format:', selectedDate);
+    if (editable) {
+      if (selectedDate instanceof Date) {
+        setShow(false);
+        setDate(selectedDate);
+        setDateOfEvent(selectedDate.toLocaleDateString());
+        setTimeOfEvent(
+          selectedDate.toLocaleTimeString([], {
+            hour: '2-digit',
+            minute: '2-digit',
+            hour12: true,
+          }),
+        );
+        setEventTimeStamp(convertToDateMs(selectedDate));
+      } else {
+        console.error('Invalid date format:', selectedDate);
+      }
     }
   };
 
@@ -237,8 +253,10 @@ const CreatePost: React.FC<CreatePostProps> = ({ route }) => {
   };
 
   const getLocation = (data: CoordinateEvent) => {
-    setLact(data.nativeEvent.coordinate.latitude);
-    setLongit(data.nativeEvent.coordinate.longitude);
+    if (editable) {
+      setLact(data.nativeEvent.coordinate.latitude);
+      setLongit(data.nativeEvent.coordinate.longitude);
+    }
   };
 
   const SubmitButton: React.FC<SubmitButtonProps> = ({
@@ -308,6 +326,7 @@ const CreatePost: React.FC<CreatePostProps> = ({ route }) => {
                 maxLength={50}
                 selectionColor={Theme.colors.primaryColor}
                 underlineColorAndroid={Theme.colors.primaryColor}
+                editable={editable}
               />
               <TextInput
                 style={[styles.textInput, styles.textTop]}
@@ -320,6 +339,7 @@ const CreatePost: React.FC<CreatePostProps> = ({ route }) => {
                 multiline
                 selectionColor={Theme.colors.primaryColor}
                 underlineColorAndroid={Theme.colors.primaryColor}
+                editable={editable}
               />
               <View style={styles.pickerView}>
                 <TouchableOpacity
@@ -373,13 +393,14 @@ const CreatePost: React.FC<CreatePostProps> = ({ route }) => {
                   }
                 />
               )}
-
-              <SubmitButton
-                disabled={disabled}
-                submitText={buttonName()}
-                onPress={onSubmit}
-                error={errorText}
-              />
+              {editable && (
+                <SubmitButton
+                  disabled={disabled}
+                  submitText={buttonName()}
+                  onPress={onSubmit}
+                  error={errorText}
+                />
+              )}
             </View>
           </View>
         </ScrollView>

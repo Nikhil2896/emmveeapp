@@ -48,15 +48,6 @@ const PostsList: React.FC<PostsListProps> = ({
         <View style={styles.cardDetailsView}>
           <Text style={styles.cardTitleText}>{item.title}</Text>
           <View style={styles.cardSubView}>
-            <View style={styles.locationIconedView}>
-              <Icon
-                name="map-marker"
-                size={20}
-                color={Theme.colors.primaryColor}
-              />
-            </View>
-          </View>
-          <View style={styles.cardSubView}>
             <View style={styles.iconedTimeView}>
               <Icon
                 name="calendar-month"
