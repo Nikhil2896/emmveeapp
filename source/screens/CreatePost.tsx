@@ -206,7 +206,7 @@ const CreatePost: React.FC<CreatePostProps> = ({ route }) => {
       setErrorText('');
       await firestore()
         .collection('posts')
-        .doc(route.params.data.key)
+        .doc(route.params.data.postID)
         .update(updateData);
       setLoading(false);
       route.params.onRefresh?.();
@@ -225,6 +225,8 @@ const CreatePost: React.FC<CreatePostProps> = ({ route }) => {
         description,
         eventTimeStamp,
         updatedAt: new Date().toString(),
+        lactitude: lact,
+        longitude: longit,
       };
       updatePost(updateData);
     } else if (route.params.create && !route.params.editable) {
