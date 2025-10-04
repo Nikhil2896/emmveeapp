@@ -118,6 +118,12 @@ const CreatePost: React.FC<CreatePostProps> = ({ route }) => {
       setLact(routeData.data.lactitude);
       setLongit(routeData.data.longitude);
       onChange(undefined, timestamp);
+      setRegion({
+        latitude: routeData.data.lactitude,
+        longitude: routeData.data.longitude,
+        latitudeDelta: 0.0922,
+        longitudeDelta: 0.0421,
+      });
     } else if (routeData.create && !routeData.editable) {
     }
   }, [refresh]);
