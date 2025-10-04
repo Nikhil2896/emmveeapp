@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useContext } from 'react';
+import React, { useEffect, useState, useContext, useRef } from 'react';
 import {
   Text,
   View,
@@ -17,6 +17,8 @@ import firestore from '@react-native-firebase/firestore';
 import { RouteProp, useNavigation } from '@react-navigation/native';
 import type { StackNavigationProp } from '@react-navigation/stack';
 import { AuthContext } from '../controller/AuthProvider';
+import MapView, { PROVIDER_GOOGLE, Marker } from 'react-native-maps';
+import { requestLocationPermission } from '../controller/Permissions';
 
 interface CreatePostProps {
   route: RouteProp<
@@ -48,10 +50,22 @@ interface PostData {
   createdAt: string;
   updatedAt: string;
   isDeleted: boolean;
+  lactitude: number;
+  longitude: number;
+}
+
+interface CoordinateEvent {
+  nativeEvent: {
+    coordinate: {
+      latitude: number;
+      longitude: number;
+    };
+  };
 }
 
 const CreatePost: React.FC<CreatePostProps> = ({ route }) => {
   const navigation = useNavigation<StackNavigationProp<any>>();
+  const map = useRef<any>(null);
   const [loading, setLoading] = useState<boolean>(false);
   const [eventName, setEventName] = useState<string>('');
   const [disabled, setDisabled] = useState<boolean>(true);
@@ -65,9 +79,35 @@ const CreatePost: React.FC<CreatePostProps> = ({ route }) => {
   const [dateOfEvent, setDateOfEvent] = useState<string>();
   const [timeOfEvent, setTimeOfEvent] = useState<string>();
   const [eventTimeStamp, setEventTimeStamp] = useState<number | string>('');
+  const [lact, setLact] = useState(17.385);
+  const [longit, setLongit] = useState(78.4867);
+  const [region, setRegion] = useState({
+    latitude: 17.385,
+    longitude: 78.4867,
+    latitudeDelta: 0.0922,
+    longitudeDelta: 0.0421,
+  });
   const { user } = useContext(AuthContext);
 
   let currentDate = new Date();
+
+  useEffect(() => {
+    const checkPermission = async () => {
+      try {
+        const result = await requestLocationPermission();
+        if (result === 'granted') {
+          setLocationStatus(true);
+        } else {
+          setLocationStatus(false);
+        }
+      } catch (error) {
+        console.error('Permission check failed:', error);
+        setLocationStatus(false);
+      }
+    };
+
+    checkPermission();
+  }, []);
 
   useEffect(() => {
     const routeData = route.params;
@@ -75,6 +115,8 @@ const CreatePost: React.FC<CreatePostProps> = ({ route }) => {
       const timestamp = new Date(parseInt(routeData.data.eventTimeStamp, 10));
       setDescription(routeData.data.description);
       setEventName(routeData.data.title);
+      setLact(routeData.data.lactitude);
+      setLongit(routeData.data.longitude);
       onChange(undefined, timestamp);
     } else if (routeData.create && !routeData.editable) {
     }
@@ -135,6 +177,8 @@ const CreatePost: React.FC<CreatePostProps> = ({ route }) => {
         description: description,
         userEmail: user?.email,
         userId: user?.uid,
+        lactitude: lact,
+        longitude: longit,
         eventTimeStamp: eventTimeStamp,
         createdAt: new Date().toString(),
         updatedAt: new Date().toString(),
@@ -184,6 +228,11 @@ const CreatePost: React.FC<CreatePostProps> = ({ route }) => {
     }
   };
 
+  const getLocation = (data: CoordinateEvent) => {
+    setLact(data.nativeEvent.coordinate.latitude);
+    setLongit(data.nativeEvent.coordinate.longitude);
+  };
+
   const SubmitButton: React.FC<SubmitButtonProps> = ({
     submitText,
     onPress,
@@ -208,7 +257,7 @@ const CreatePost: React.FC<CreatePostProps> = ({ route }) => {
           >
             <Text style={styles.postText}>{submitText}</Text>
           </TouchableOpacity>
-        </View>{' '}
+        </View>
       </>
     );
   };
@@ -285,7 +334,23 @@ const CreatePost: React.FC<CreatePostProps> = ({ route }) => {
                   <Icon name="chevron-down" size={20} />
                 </TouchableOpacity>
               </View>
-
+              <View style={{ height: 300, marginTop: 20 }}>
+                <MapView
+                  ref={map}
+                  provider={PROVIDER_GOOGLE}
+                  style={styles.map}
+                  initialRegion={region}
+                  onPress={getLocation}
+                  showsUserLocation={true}
+                >
+                  <Marker
+                    coordinate={{
+                      latitude: lact,
+                      longitude: longit,
+                    }}
+                  />
+                </MapView>
+              </View>
               {show && (
                 <DateTimePicker
                   testID="dateTimePicker"
@@ -421,5 +486,9 @@ const styles = StyleSheet.create({
     fontSize: Theme.fontSize.small,
     textAlign: 'center',
     marginTop: 20,
+  },
+  map: {
+    height: '100%',
+    width: '100%',
   },
 });
