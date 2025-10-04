@@ -141,6 +141,7 @@ const Home: React.FC<HomeProps> = props => {
         onChangeText={setSearchText}
         value={searchText}
         placeholder="Search event"
+        placeholderTextColor={Theme.colors.placeHolder}
         maxLength={25}
         selectionColor={Theme.colors.primaryColor}
       />
