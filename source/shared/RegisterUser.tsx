@@ -12,8 +12,7 @@ import Theme from '../constants/Theme';
 import { AuthContext } from '../controller/AuthProvider';
 import ModalLoading from './ModalLoading';
 import auth from '@react-native-firebase/auth';
-import firebase from 'firebase/compat/app';
-import 'firebase/compat/database';
+import { firebase } from '@react-native-firebase/database';
 
 type RegisterUserProps = {
   from: typeof Routes.Login | typeof Routes.Profile;
@@ -28,7 +27,6 @@ const RegisterUser: React.FC<RegisterUserProps> = props => {
 
   const [name, setName] = useState<string>('');
   const [mobile, setMobile] = useState<string>('');
-  const [image, setImage] = useState<string | null>(null);
   const [email, setEmail] = useState<string>('');
   const [password, setPassword] = useState<string>('');
   const [disabled, setDisabled] = useState<boolean>(true);
@@ -47,7 +45,6 @@ const RegisterUser: React.FC<RegisterUserProps> = props => {
     if (props.from === Routes.Profile) {
       auth().currentUser?.providerData.forEach(userInfo => {
         setName(userInfo.displayName || '');
-        setImage(userInfo.photoURL || null);
         setEmail(userInfo.email || '');
       });
       setModalLoading(true);
@@ -110,7 +107,6 @@ const RegisterUser: React.FC<RegisterUserProps> = props => {
   const updateFirebase = async () => {
     const update = {
       displayName: name.trim(),
-      photoURL: image,
     };
     await auth().currentUser?.updateProfile(update);
     setDisabled(false);
@@ -125,7 +121,6 @@ const RegisterUser: React.FC<RegisterUserProps> = props => {
     try {
       const profileData = {
         name: name.trim(),
-        image: image,
         mobile: mobile || '',
         updatedAt: new Date().toString(),
         email: email,
@@ -160,6 +155,7 @@ const RegisterUser: React.FC<RegisterUserProps> = props => {
             selectionColor={Theme.colors.primaryColor}
             underlineColorAndroid={Theme.colors.primaryColor}
             style={styles.textInput}
+            placeholderTextColor={Theme.colors.placeHolder}
           />
         </View>
 
@@ -175,6 +171,7 @@ const RegisterUser: React.FC<RegisterUserProps> = props => {
             selectionColor={Theme.colors.primaryColor}
             underlineColorAndroid={Theme.colors.primaryColor}
             style={styles.textInput}
+            placeholderTextColor={Theme.colors.placeHolder}
           />
         </View>
 
@@ -191,6 +188,7 @@ const RegisterUser: React.FC<RegisterUserProps> = props => {
             selectionColor={Theme.colors.primaryColor}
             underlineColorAndroid={Theme.colors.primaryColor}
             style={styles.textInput}
+            placeholderTextColor={Theme.colors.placeHolder}
           />
         </View>
 
@@ -206,6 +204,7 @@ const RegisterUser: React.FC<RegisterUserProps> = props => {
               selectionColor={Theme.colors.primaryColor}
               underlineColorAndroid={Theme.colors.primaryColor}
               style={styles.textInput}
+              placeholderTextColor={Theme.colors.placeHolder}
               secureTextEntry
             />
           </View>

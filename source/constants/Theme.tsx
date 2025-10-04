@@ -6,6 +6,7 @@ export const Theme = {
     white: '#FFFFFF',
     black: '#000000',
     error: '#FF4747',
+    placeHolder: '#888888',
   },
 
   fonts: {

@@ -107,6 +107,7 @@ const Login: React.FC<LoginProps> = props => {
               multiline={false}
               selectionColor={Theme.colors.primaryColor}
               underlineColorAndroid={Theme.colors.primaryColor}
+              placeholderTextColor={Theme.colors.placeHolder}
               style={styles.textInput}
             />
           </View>
@@ -120,6 +121,7 @@ const Login: React.FC<LoginProps> = props => {
               value={password}
               onChangeText={setPassword}
               multiline={false}
+              placeholderTextColor={Theme.colors.placeHolder}
               selectionColor={Theme.colors.primaryColor}
               underlineColorAndroid={Theme.colors.primaryColor}
               style={styles.textInput}

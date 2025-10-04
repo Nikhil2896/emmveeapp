@@ -1,7 +1,10 @@
 import React, { useContext, useState, useEffect } from 'react';
-import { StyleSheet, View } from 'react-native';
+import { StyleSheet, View, TouchableOpacity, Text } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
-import { createStackNavigator } from '@react-navigation/stack';
+import {
+  createStackNavigator,
+  StackNavigationProp,
+} from '@react-navigation/stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import { Routes } from '../constants/AppConstants';
@@ -12,21 +15,8 @@ import CreatePost from '../screens/CreatePost';
 import Profile from '../screens/Profile';
 import Posts from '../screens/Posts';
 import ViewPost from '../screens/ViewPost';
-import { getApps, getApp, initializeApp } from 'firebase/app';
 import { AuthContext } from '../controller/AuthProvider';
 import auth, { FirebaseAuthTypes } from '@react-native-firebase/auth';
-
-const config = {
-  databaseURL: 'https://eazy-navigation-default-rtdb.firebaseio.com/',
-  storageBucket: 'gs://eazy-navigation.appspot.com',
-  projectId: 'eazy-navigation',
-};
-
-if (!getApps().length) {
-  initializeApp(config);
-} else {
-  getApp();
-}
 
 type RootStackParamList = {
   [Routes.Login]: undefined;
@@ -44,6 +34,11 @@ type AdditionalStackParamList = {
   [Routes.Profile]: undefined;
   [Routes.ViewPost]: undefined;
 };
+
+interface HeaderIconProps {
+  navigation: StackNavigationProp<any>;
+  to: string;
+}
 
 const Tab = createBottomTabNavigator<MainTabParamList>();
 const Stack = createStackNavigator<RootStackParamList>();
@@ -64,6 +59,44 @@ const AppNavigation: React.FC = () => {
   }, [initializing]);
 
   if (initializing) return null;
+
+  const HeaderIcon: React.FC<HeaderIconProps> = ({ navigation, to }) => {
+    return (
+      <TouchableOpacity
+        style={{ marginHorizontal: 20 }}
+        onPress={() =>
+          navigation.navigate(Routes.AdditionalStack, {
+            screen: to,
+            params: {
+              from: Routes.AppNavigation,
+              editable: false,
+              create: true,
+            },
+          })
+        }
+      >
+        <Icon
+          name={to === Routes.Profile ? 'account' : 'plus'}
+          size={35}
+          style={{ color: Theme.colors.primaryLight }}
+        />
+      </TouchableOpacity>
+    );
+  };
+
+  const MainHeader = () => {
+    return (
+      <Text
+        style={{
+          textAlign: 'center',
+          color: Theme.colors.primaryLight,
+          fontSize: Theme.fontSize.large,
+        }}
+      >
+        EMMVEEE
+      </Text>
+    );
+  };
 
   const MainStack: React.FC = () => {
     return (
@@ -138,7 +171,19 @@ const AppNavigation: React.FC = () => {
         <Stack.Screen
           name={Routes.MainStack}
           component={MainStack}
-          options={{ headerShown: false }}
+          options={({ navigation }) => ({
+            headerTitle: () => <MainHeader />,
+            headerTitleAlign: 'center',
+            headerStyle: {
+              backgroundColor: Theme.colors.primaryDark,
+            },
+            headerLeft: () => (
+              <HeaderIcon navigation={navigation} to={Routes.Profile} />
+            ),
+            headerRight: () => (
+              <HeaderIcon navigation={navigation} to={Routes.CreatePost} />
+            ),
+          })}
         />
         <Stack.Screen
           name={Routes.AdditionalStack}
