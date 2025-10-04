@@ -45,7 +45,7 @@ const Posts: React.FC<PostsProps> = ({ navigation }) => {
           .collection('posts')
           .where('userId', '==', user?.uid)
           .where('isDeleted', '==', false)
-          .orderBy('eventTimeStamp', 'desc');
+          .orderBy('eventTimeStamp', 'asc');
 
       const fbQuery = lastVisible ? query.startAfter(lastVisible) : query;
       const snapshot = await fbQuery.limit(5).get();

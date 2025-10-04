@@ -32,14 +32,14 @@ const Home: React.FC<HomeProps> = props => {
       firestore()
         .collection('posts')
         .where('isDeleted', '==', false)
-        .orderBy('eventTimeStamp', 'desc');
+        .orderBy('eventTimeStamp', 'asc');
     getPostsData(query, false);
   }, [refresh]);
 
   const regQuery = firestore()
     .collection('posts')
     .where('isDeleted', '==', false)
-    .orderBy('eventTimeStamp', 'desc');
+    .orderBy('eventTimeStamp', 'asc');
 
   const searchQuery = firestore()
     .collection('posts')
