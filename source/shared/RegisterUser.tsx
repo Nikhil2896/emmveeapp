@@ -21,7 +21,6 @@ type RegisterUserProps = {
   city?: string;
   success: () => void;
   setReload?: (reload: boolean) => void;
-  saveLogin: (number: string) => void;
 };
 
 const RegisterUser: React.FC<RegisterUserProps> = props => {
@@ -65,7 +64,6 @@ const RegisterUser: React.FC<RegisterUserProps> = props => {
             const val = response.val();
             if (val) {
               setMobile(val.mobile || '');
-              props.saveLogin(val.mobile || '');
             }
             setModalLoading(false);
           });
@@ -139,7 +137,6 @@ const RegisterUser: React.FC<RegisterUserProps> = props => {
         .then(() => {
           console.log('FIREBASE UPDATED');
           updateFirebase();
-          props.saveLogin(mobile || '');
         });
     } catch (e) {
       setDisabled(false);

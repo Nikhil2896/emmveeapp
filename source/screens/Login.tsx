@@ -160,11 +160,7 @@ const Login: React.FC<LoginProps> = props => {
         onRequestClose={closeRegister}
         transparent={true}
       >
-        <RegisterUser
-          from={Routes.Login}
-          success={registered}
-          saveLogin={() => {}}
-        />
+        <RegisterUser from={Routes.Login} success={registered} />
       </Modal>
     </>
   );
