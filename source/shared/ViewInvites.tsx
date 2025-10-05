@@ -8,7 +8,7 @@ import {
   TextInput,
 } from 'react-native';
 import Theme from '../constants/Theme';
-import ModelLoading from '../shared/ModalLoading';
+import ModelLoading from './ModalLoading';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import firestore from '@react-native-firebase/firestore';
 import { RouteProp, useNavigation } from '@react-navigation/native';

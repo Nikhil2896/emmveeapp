@@ -14,7 +14,7 @@ import Theme from '../constants/Theme';
 import CreatePost from '../screens/CreatePost';
 import Profile from '../screens/Profile';
 import Posts from '../screens/Posts';
-import ViewInvites from '../screens/ViewInvites';
+import ViewInvites from '../shared/ViewInvites.tsx';
 import Invitations from '../screens/Invitations.tsx';
 import { AuthContext } from '../controller/AuthProvider';
 import auth, { FirebaseAuthTypes } from '@react-native-firebase/auth';

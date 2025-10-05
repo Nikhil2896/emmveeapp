@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useContext } from 'react';
+import React, { useEffect, useState, useContext, useCallback } from 'react';
 import {
   View,
   StyleSheet,
@@ -19,6 +19,7 @@ import { AuthContext } from '../controller/AuthProvider';
 import { Invite } from '../types/Invite';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import { formatDate, formatTime } from '../controller/Datefunctions';
+import { useIsFocused } from '@react-navigation/native';
 
 interface PostsProps {
   navigation: NativeStackNavigationProp<any>;
@@ -30,17 +31,16 @@ const Invitations: React.FC<PostsProps> = ({ navigation }) => {
   const [loading, setLoading] = useState<boolean>(true);
   const [refresh, setRefresh] = useState<boolean>(true);
   const [errorText, setErrorText] = useState<string>('');
+  const isFocused = useIsFocused();
 
   useEffect(() => {
     getInvites();
     setLoading(true);
   }, [refresh]);
 
-  const convertDate = (dateString: string): number => {
-    const timestamp = new Date(dateString).getTime();
-    return timestamp;
-  };
-
+  useEffect(() => {
+    onRefresh();
+  }, [isFocused]);
   const getInvites = async () => {
     try {
       const dataList: Invite[] = [];
