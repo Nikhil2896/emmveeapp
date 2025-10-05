@@ -53,7 +53,7 @@ interface PostData {
   createdAt: string;
   updatedAt: string;
   isDeleted: boolean;
-  lactitude: number;
+  latitude: number;
   longitude: number;
 }
 
@@ -125,11 +125,11 @@ const CreatePost: React.FC<CreatePostProps> = ({ route }) => {
       const timestamp = new Date(parseInt(routeData.data.eventTimeStamp, 10));
       setDescription(routeData.data.description);
       setEventName(routeData.data.title);
-      setLact(routeData.data.lactitude);
+      setLact(routeData.data.latitude);
       setLongit(routeData.data.longitude);
       onChange(undefined, timestamp);
       setRegion({
-        latitude: routeData.data.lactitude,
+        latitude: routeData.data.latitude,
         longitude: routeData.data.longitude,
         latitudeDelta: 0.0922,
         longitudeDelta: 0.0421,
@@ -138,11 +138,11 @@ const CreatePost: React.FC<CreatePostProps> = ({ route }) => {
       const timestamp = new Date(parseInt(routeData.data.eventTimeStamp, 10));
       setDescription(routeData.data.description);
       setEventName(routeData.data.title);
-      setLact(routeData.data.lactitude);
+      setLact(routeData.data.latitude);
       setLongit(routeData.data.longitude);
       onChange(undefined, timestamp);
       setRegion({
-        latitude: routeData.data.lactitude,
+        latitude: routeData.data.latitude,
         longitude: routeData.data.longitude,
         latitudeDelta: 0.0922,
         longitudeDelta: 0.0421,
@@ -208,7 +208,7 @@ const CreatePost: React.FC<CreatePostProps> = ({ route }) => {
         description: description,
         userEmail: user?.email,
         userId: user?.uid,
-        lactitude: lact,
+        latitude: lact,
         longitude: longit,
         eventTimeStamp: eventTimeStamp,
         createdAt: new Date().toString(),
@@ -250,7 +250,7 @@ const CreatePost: React.FC<CreatePostProps> = ({ route }) => {
         description,
         eventTimeStamp,
         updatedAt: new Date().toString(),
-        lactitude: lact,
+        latitude: lact,
         longitude: longit,
       };
       updatePost(updateData);
@@ -423,7 +423,7 @@ const CreatePost: React.FC<CreatePostProps> = ({ route }) => {
                 <Text style={styles.searchText}>{searchError}</Text>
                 {userFound && (
                   <TouchableOpacity
-                    disabled={user?.email == InvitedUser.email}
+                    // disabled={user?.email == InvitedUser.email}
                     style={styles.userinviteButton}
                     onPress={sendInvite}
                   >

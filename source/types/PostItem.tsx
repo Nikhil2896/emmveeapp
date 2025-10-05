@@ -8,7 +8,7 @@ export interface PostItem {
   createdAt: string | number;
   updatedAt: string | number;
   isDeleted?: boolean;
-  lactitude: number;
+  latitude: number;
   longitude: number;
   postID: string;
 }

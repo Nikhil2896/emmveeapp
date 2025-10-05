@@ -59,7 +59,7 @@ const Posts: React.FC<PostsProps> = ({ navigation }) => {
           description: data.description,
           userEmail: data.userEmail,
           userId: data.userId,
-          lactitude: data.lactitude,
+          latitude: data.latitude,
           longitude: data.longitude,
           eventTimeStamp: data.eventTimeStamp,
           createdAt: convertDate(data.createdAt),
