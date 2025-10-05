@@ -83,6 +83,7 @@ const CreatePost: React.FC<CreatePostProps> = ({ route }) => {
   const [date, setDate] = useState<Date>(new Date());
   const [mode, setMode] = useState<'date' | 'time'>('date');
   const [show, setShow] = useState<boolean>(false);
+  const [InvitedUser, setInvitedUser] = useState<boolean>(false);
   const [refresh, setRefresh] = useState<boolean>(false);
   const [locationStatus, setLocationStatus] = useState<boolean>(true);
   const [dateOfEvent, setDateOfEvent] = useState<string>();
@@ -283,6 +284,7 @@ const CreatePost: React.FC<CreatePostProps> = ({ route }) => {
             snapshot.forEach(childSnapshot => {
               const userData = childSnapshot.val();
               console.log('User found:', userData);
+              setInvitedUser(userData);
               setSearchError(userData.name);
               setUserFound(true);
             });
@@ -299,6 +301,38 @@ const CreatePost: React.FC<CreatePostProps> = ({ route }) => {
           setUserFound(false);
         });
     }
+  };
+
+  const sendInvite = async () => {
+    console.log(InvitedUser);
+    try {
+      setLoading(true);
+      setErrorText('');
+      const invites = {
+        postedUserId: user?.uid,
+        postedUserEmail: user?.email,
+        postedFcm: '',
+        eventTimeStamp: eventTimeStamp,
+        createdAt: new Date().toString(),
+        updatedAt: new Date().toString(),
+        title: eventName,
+        invitedUser: InvitedUser.email,
+        invitedFcm: '',
+      };
+      await firestore().collection('invites').add(invites);
+      setLoading(false);
+      closeInvite();
+    } catch (error: any) {
+      console.log('Create Post Error:', error);
+      setErrorText('Failed to create post');
+      setLoading(false);
+    }
+  };
+
+  const closeInvite = () => {
+    setModalVisible(!modalVisible);
+    setSearchError('');
+    setSearchText('');
   };
 
   const SubmitButton: React.FC<SubmitButtonProps> = ({
@@ -357,11 +391,7 @@ const CreatePost: React.FC<CreatePostProps> = ({ route }) => {
         animationType="fade"
         transparent={true}
         visible={modalVisible}
-        onRequestClose={() => {
-          setModalVisible(!modalVisible);
-          setSearchError('');
-          setSearchText('');
-        }}
+        onRequestClose={closeInvite}
       >
         <View style={styles.modalContainer}>
           <View style={styles.modalView}>
@@ -377,23 +407,20 @@ const CreatePost: React.FC<CreatePostProps> = ({ route }) => {
                 <Text style={styles.searchText}>{searchError}</Text>
                 {userFound && (
                   <TouchableOpacity
-                    style={{
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      marginTop: 20,
-                    }}
+                    disabled={user?.email == InvitedUser.email}
+                    style={styles.userinviteButton}
+                    onPress={sendInvite}
                   >
                     <Text
-                      style={{
-                        textAlign: 'center',
-                        color: Theme.colors.primaryLight,
-                        fontSize: Theme.fontSize.medium,
-                        paddingVertical: 10,
-                        backgroundColor: Theme.colors.primaryColor,
-                        paddingHorizontal: 30,
-                        elevation: 5,
-                        borderRadius: 5,
-                      }}
+                      style={[
+                        styles.userInviteText,
+                        {
+                          backgroundColor:
+                            user?.email == InvitedUser.email
+                              ? Theme.colors.placeHolder
+                              : Theme.colors.primaryColor,
+                        },
+                      ]}
                     >
                       Invite
                     </Text>
@@ -696,5 +723,19 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     color: Theme.colors.primaryColor,
     marginTop: 80,
+  },
+  userinviteButton: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginTop: 20,
+  },
+  userInviteText: {
+    textAlign: 'center',
+    color: Theme.colors.primaryLight,
+    fontSize: Theme.fontSize.medium,
+    paddingVertical: 10,
+    paddingHorizontal: 30,
+    elevation: 5,
+    borderRadius: 5,
   },
 });
