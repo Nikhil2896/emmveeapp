@@ -22,6 +22,7 @@ import { AuthContext } from '../controller/AuthProvider';
 import MapView, { PROVIDER_GOOGLE, Marker } from 'react-native-maps';
 import { requestLocationPermission } from '../controller/Permissions';
 import { firebase } from '@react-native-firebase/database';
+import messaging from '@react-native-firebase/messaging';
 
 interface CreatePostProps {
   route: RouteProp<
@@ -304,10 +305,10 @@ const CreatePost: React.FC<CreatePostProps> = ({ route }) => {
   };
 
   const sendInvite = async () => {
-    console.log(InvitedUser);
     try {
       setLoading(true);
       setErrorText('');
+      let token = await messaging().getToken();
       const existingInvite = await firestore()
         .collection('invites')
         .where('postedUserId', '==', user?.uid)
@@ -324,13 +325,13 @@ const CreatePost: React.FC<CreatePostProps> = ({ route }) => {
           postedUserId: user?.uid,
           postedUserEmail: user?.email,
           postedUserName: user?.displayName,
-          postedFcm: '',
+          postedFcm: token,
           eventTimeStamp: eventTimeStamp,
           createdAt: new Date().toString(),
           updatedAt: new Date().toString(),
           title: eventName,
           invitedUser: InvitedUser.email,
-          invitedFcm: '',
+          invitedFcm: InvitedUser.fcm,
           postID: route.params.data.postID,
           status: 'Pending',
         };
@@ -423,7 +424,7 @@ const CreatePost: React.FC<CreatePostProps> = ({ route }) => {
                 <Text style={styles.searchText}>{searchError}</Text>
                 {userFound && (
                   <TouchableOpacity
-                    // disabled={user?.email == InvitedUser.email}
+                    disabled={user?.email == InvitedUser.email}
                     style={styles.userinviteButton}
                     onPress={sendInvite}
                   >
