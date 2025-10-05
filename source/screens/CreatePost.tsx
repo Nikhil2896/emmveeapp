@@ -351,6 +351,7 @@ const CreatePost: React.FC<CreatePostProps> = ({ route }) => {
     setSearchError('');
     setSearchText('');
     setInvitedUser(false);
+    setUserFound(false);
   };
 
   const SubmitButton: React.FC<SubmitButtonProps> = ({
@@ -569,7 +570,10 @@ const CreatePost: React.FC<CreatePostProps> = ({ route }) => {
           {!route.params.create && route.params.editable && (
             <TouchableOpacity
               style={styles.inviteButton}
-              onPress={() => setModalVisible(true)}
+              onPress={() => {
+                setModalVisible(true);
+                console.log(')))))))))))', InvitedUser);
+              }}
             >
               <Text style={styles.inviteText}>Invite a Friend</Text>
             </TouchableOpacity>
