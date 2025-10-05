@@ -6,7 +6,7 @@ export const Routes = {
   Profile: 'PROFILE',
   AppNavigation: 'APP_NAVIGATION',
   Invitations: 'INVITATIONS',
-  ViewPost: 'VIEW_POST',
+  ViewInvites: 'VIEW_INVITES',
   MainStack: 'MAINSTACK',
   AdditionalStack: 'ADDITIONAL_STACK',
 } as const;

@@ -139,7 +139,7 @@ const styles = StyleSheet.create({
     backgroundColor: Theme.colors.white,
     elevation: 2,
     marginHorizontal: 20,
-    marginBottom: 20,
+    marginBottom: 10,
   },
   cardDetailsView: {
     padding: 20,

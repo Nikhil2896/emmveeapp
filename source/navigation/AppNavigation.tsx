@@ -14,7 +14,7 @@ import Theme from '../constants/Theme';
 import CreatePost from '../screens/CreatePost';
 import Profile from '../screens/Profile';
 import Posts from '../screens/Posts';
-import ViewPost from '../screens/ViewPost';
+import ViewInvites from '../screens/ViewInvites.tsx';
 import Invitations from '../screens/Invitations.tsx';
 import { AuthContext } from '../controller/AuthProvider';
 import auth, { FirebaseAuthTypes } from '@react-native-firebase/auth';
@@ -34,7 +34,7 @@ type MainTabParamList = {
 type AdditionalStackParamList = {
   [Routes.CreatePost]: undefined;
   [Routes.Profile]: undefined;
-  [Routes.ViewPost]: undefined;
+  [Routes.ViewInvites]: undefined;
 };
 
 interface HeaderIconProps {
@@ -160,8 +160,8 @@ const AppNavigation: React.FC = () => {
           options={{ headerShown: false }}
         />
         <Additional.Screen
-          name={Routes.ViewPost}
-          component={ViewPost}
+          name={Routes.ViewInvites}
+          component={ViewInvites}
           options={{ headerShown: false }}
         />
       </Additional.Navigator>

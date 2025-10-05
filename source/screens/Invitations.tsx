@@ -95,13 +95,9 @@ const Invitations: React.FC<PostsProps> = ({ navigation }) => {
 
   const onPostClicked = (data: Invite) => {
     navigation.navigate(Routes.AdditionalStack, {
-      screen: Routes.CreatePost,
+      screen: Routes.ViewInvites,
       params: {
-        from: Routes.MyPosts,
-        editable: true,
         data: data,
-        create: false,
-        onRefresh: onRefresh,
       },
     });
   };
@@ -172,15 +168,7 @@ const Invitations: React.FC<PostsProps> = ({ navigation }) => {
           renderItem={renderItem}
           ListEmptyComponent={emptyComponent}
           contentContainerStyle={styles.flatlistStyle}
-          ItemSeparatorComponent={() => (
-            <View
-              style={{
-                height: 1,
-                backgroundColor: Theme.colors.placeHolder,
-                marginHorizontal: 20,
-              }}
-            />
-          )}
+          ItemSeparatorComponent={() => <View style={styles.divider} />}
           refreshControl={
             <RefreshControl
               refreshing={loading}
@@ -272,5 +260,10 @@ const styles = StyleSheet.create({
     color: Theme.colors.primaryDark,
     textAlign: 'right',
     marginTop: 15,
+  },
+  divider: {
+    height: 1,
+    backgroundColor: Theme.colors.placeHolder,
+    marginHorizontal: 20,
   },
 });

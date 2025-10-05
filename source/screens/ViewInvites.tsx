@@ -1,7 +1,7 @@
 import React from 'react';
 import { StyleSheet, View, Text } from 'react-native';
 
-const ViewPost: React.FC = () => {
+const ViewInvites: React.FC = () => {
   return (
     <View style={styles.container}>
       <Text>ViewPost Screen</Text>
@@ -9,7 +9,7 @@ const ViewPost: React.FC = () => {
   );
 };
 
-export default ViewPost;
+export default ViewInvites;
 
 const styles = StyleSheet.create({
   container: {
