@@ -150,6 +150,9 @@ const RegisterUser: React.FC<RegisterUserProps> = props => {
     <ScrollView contentContainerStyle={styles.container}>
       <ModalLoading visible={modalLoading} />
       <View style={styles.form}>
+        <Text style={styles.heading}>
+          {props.from !== Routes.Profile ? 'Register' : 'Profile'}
+        </Text>
         <View style={styles.inputContainer}>
           <Text style={styles.title}>Name :</Text>
           <TextInput
@@ -288,5 +291,12 @@ const styles = StyleSheet.create({
     height: '100%',
     width: '100%',
     backgroundColor: Theme.colors.white,
+  },
+  heading: {
+    textAlign: 'center',
+    paddingBottom: 30,
+    fontSize: Theme.fontSize.large,
+    fontWeight: '500',
+    color: Theme.colors.primaryColor,
   },
 });

@@ -93,9 +93,9 @@ const Login: React.FC<LoginProps> = props => {
   return (
     <>
       <ScrollView contentContainerStyle={styles.container}>
+        <Text style={styles.appName}>EMMVEE EVENTS</Text>
         <View style={styles.form}>
-          <Text style={{ textAlign: 'center', paddingBottom: 30 }}>LogIn</Text>
-
+          <Text style={styles.heading}>LogIn</Text>
           <View style={styles.inputContainer}>
             <Text style={styles.title}>Email :</Text>
             <TextInput
@@ -209,5 +209,18 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     color: Theme.colors.error,
     fontSize: Theme.fontSize.small,
+  },
+  heading: {
+    textAlign: 'center',
+    paddingBottom: 30,
+    fontSize: Theme.fontSize.large,
+    fontWeight: '500',
+    color: Theme.colors.primaryColor,
+  },
+  appName: {
+    textAlign: 'center',
+    fontSize: Theme.fontSize.xLarge,
+    color: Theme.colors.primaryDark,
+    marginBottom: 50,
   },
 });
