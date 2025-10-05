@@ -350,6 +350,7 @@ const CreatePost: React.FC<CreatePostProps> = ({ route }) => {
     setModalVisible(!modalVisible);
     setSearchError('');
     setSearchText('');
+    setInvitedUser(false);
   };
 
   const SubmitButton: React.FC<SubmitButtonProps> = ({
