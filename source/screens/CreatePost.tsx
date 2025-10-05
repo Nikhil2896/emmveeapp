@@ -331,6 +331,7 @@ const CreatePost: React.FC<CreatePostProps> = ({ route }) => {
           updatedAt: new Date().toString(),
           title: eventName,
           invitedUser: InvitedUser.email,
+          invitedName: InvitedUser.name,
           invitedFcm: InvitedUser.fcm,
           postID: route.params.data.postID,
           status: 'Pending',
