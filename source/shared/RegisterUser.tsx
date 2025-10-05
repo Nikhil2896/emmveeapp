@@ -13,6 +13,7 @@ import { AuthContext } from '../controller/AuthProvider';
 import ModalLoading from './ModalLoading';
 import auth from '@react-native-firebase/auth';
 import { firebase } from '@react-native-firebase/database';
+import messaging from '@react-native-firebase/messaging';
 
 type RegisterUserProps = {
   from: typeof Routes.Login | typeof Routes.Profile;
@@ -116,16 +117,18 @@ const RegisterUser: React.FC<RegisterUserProps> = props => {
     props.success();
   };
 
-  const updateUser = () => {
+  const updateUser = async () => {
     setDisabled(true);
     setModalLoading(true);
     setErrorMessage(null);
     try {
+      let token = await messaging().getToken();
       const profileData = {
         name: name.trim(),
         mobile: mobile || '',
         updatedAt: new Date().toString(),
         email: email,
+        fcm: token,
       };
       firebase
         .database()
@@ -139,6 +142,7 @@ const RegisterUser: React.FC<RegisterUserProps> = props => {
       setDisabled(false);
       setModalLoading(false);
       setErrorMessage('Failed to update details. Please try again later');
+      console.log('eeeeeeeeee', e);
     }
   };
 

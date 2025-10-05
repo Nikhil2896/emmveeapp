@@ -1,6 +1,7 @@
 import React, { createContext, useState, ReactNode } from 'react';
 import auth, { FirebaseAuthTypes } from '@react-native-firebase/auth';
 import { firebase } from '@react-native-firebase/database';
+import messaging from '@react-native-firebase/messaging';
 
 interface AuthContextType {
   user: FirebaseAuthTypes.User | null;
@@ -26,15 +27,16 @@ type UserData = {
   };
 };
 
-const addUser = (data: UserData, name: string, mobile?: string) => {
+const addUser = async (data: UserData, name: string, mobile?: string) => {
+  let token = await messaging().getToken();
   const profileData = {
     name: name.trim(),
-    image: '',
     updatedAt: new Date().toISOString(),
     mobile: mobile ?? '',
     email: data.user.email ?? '',
+    fcm: token,
   };
-  firebase
+  await firebase
     .database()
     .ref('users/' + data.user.uid)
     .set(profileData)
