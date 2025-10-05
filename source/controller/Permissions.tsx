@@ -21,3 +21,25 @@ export const requestLocationPermission = async (): Promise<
     return err;
   }
 };
+
+export const requestNotificationPermission = async (): Promise<
+  'granted' | 'denied' | 'never ask again' | 'disallow' | Error
+> => {
+  try {
+    const granted = await PermissionsAndroid.request(
+      PermissionsAndroid.PERMISSIONS.POST_NOTIFICATIONS,
+    );
+
+    if (granted === PermissionsAndroid.RESULTS.GRANTED) {
+      return 'granted';
+    } else if (granted === PermissionsAndroid.RESULTS.DENIED) {
+      return 'denied';
+    } else if (granted === PermissionsAndroid.RESULTS.NEVER_ASK_AGAIN) {
+      return 'never ask again';
+    } else {
+      return 'disallow';
+    }
+  } catch (err: any) {
+    return err;
+  }
+};
