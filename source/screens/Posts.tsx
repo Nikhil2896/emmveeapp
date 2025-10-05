@@ -48,7 +48,7 @@ const Posts: React.FC<PostsProps> = ({ navigation }) => {
           .orderBy('eventTimeStamp', 'asc');
 
       const fbQuery = lastVisible ? query.startAfter(lastVisible) : query;
-      const snapshot = await fbQuery.limit(5).get();
+      const snapshot = await fbQuery.get();
 
       setLastVisible(snapshot.docs[snapshot.docs.length - 1] ?? null);
 
@@ -119,7 +119,7 @@ const Posts: React.FC<PostsProps> = ({ navigation }) => {
           paginate={() => paginationState && getPostsData(true)}
           data={postsData}
           loading={loading}
-          stopPaginate={paginationState}
+          stopPaginate={false}
           onPostClicked={onPostClicked}
         />
       )}

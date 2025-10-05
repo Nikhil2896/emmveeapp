@@ -15,6 +15,7 @@ import CreatePost from '../screens/CreatePost';
 import Profile from '../screens/Profile';
 import Posts from '../screens/Posts';
 import ViewPost from '../screens/ViewPost';
+import Invitations from '../screens/Invitations.tsx';
 import { AuthContext } from '../controller/AuthProvider';
 import auth, { FirebaseAuthTypes } from '@react-native-firebase/auth';
 
@@ -27,6 +28,7 @@ type RootStackParamList = {
 type MainTabParamList = {
   [Routes.Home]: undefined;
   [Routes.MyPosts]: undefined;
+  [Routes.Invitations]: undefined;
 };
 
 type AdditionalStackParamList = {
@@ -116,6 +118,9 @@ const AppNavigation: React.FC = () => {
                 case Routes.MyPosts:
                   iconName = 'post';
                   break;
+                case Routes.Invitations:
+                  iconName = 'email';
+                  break;
               }
               return <Icon name={iconName} size={size} color={color} />;
             },
@@ -129,6 +134,11 @@ const AppNavigation: React.FC = () => {
           <Tab.Screen
             name={Routes.MyPosts}
             component={Posts}
+            options={{ headerShown: false }}
+          />
+          <Tab.Screen
+            name={Routes.Invitations}
+            component={Invitations}
             options={{ headerShown: false }}
           />
         </Tab.Navigator>

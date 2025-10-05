@@ -308,23 +308,39 @@ const CreatePost: React.FC<CreatePostProps> = ({ route }) => {
     try {
       setLoading(true);
       setErrorText('');
-      const invites = {
-        postedUserId: user?.uid,
-        postedUserEmail: user?.email,
-        postedFcm: '',
-        eventTimeStamp: eventTimeStamp,
-        createdAt: new Date().toString(),
-        updatedAt: new Date().toString(),
-        title: eventName,
-        invitedUser: InvitedUser.email,
-        invitedFcm: '',
-      };
-      await firestore().collection('invites').add(invites);
-      setLoading(false);
-      closeInvite();
+      const existingInvite = await firestore()
+        .collection('invites')
+        .where('postedUserId', '==', user?.uid)
+        .where('invitedUser', '==', InvitedUser.email)
+        .where('postID', '==', route.params.data.postID)
+        .get();
+      if (!existingInvite.empty) {
+        setErrorText('Invitation already sent to this user for this event.');
+        setLoading(false);
+        closeInvite();
+        return;
+      } else {
+        const invites = {
+          postedUserId: user?.uid,
+          postedUserEmail: user?.email,
+          postedUserName: user?.displayName,
+          postedFcm: '',
+          eventTimeStamp: eventTimeStamp,
+          createdAt: new Date().toString(),
+          updatedAt: new Date().toString(),
+          title: eventName,
+          invitedUser: InvitedUser.email,
+          invitedFcm: '',
+          postID: route.params.data.postID,
+          status: 'Pending',
+        };
+        await firestore().collection('invites').add(invites);
+        setLoading(false);
+        closeInvite();
+      }
     } catch (error: any) {
-      console.log('Create Post Error:', error);
-      setErrorText('Failed to create post');
+      console.log('Invite Error:', error);
+      setErrorText('Failed send Invite');
       setLoading(false);
     }
   };
