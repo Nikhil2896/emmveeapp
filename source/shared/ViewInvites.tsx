@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef, useContext } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import {
   Text,
   View,
@@ -11,29 +11,36 @@ import Theme from '../constants/Theme';
 import ModelLoading from './ModalLoading';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import firestore from '@react-native-firebase/firestore';
-import { RouteProp, useNavigation } from '@react-navigation/native';
+import {
+  RouteProp,
+  useNavigation,
+  useRoute,
+  CompositeNavigationProp,
+} from '@react-navigation/native';
 import type { StackNavigationProp } from '@react-navigation/stack';
-import MapView, { PROVIDER_GOOGLE, Marker } from 'react-native-maps';
-import { Invite } from '../types/Invite';
+import MapView, { PROVIDER_GOOGLE, Marker, Region } from 'react-native-maps';
 import { DateTimePickerEvent } from '@react-native-community/datetimepicker';
+import { Invite } from '../types/Invite';
 
-interface CreatePostProps {
-  route: RouteProp<
-    {
-      params: {
-        create: boolean;
-        editable: boolean;
-        data?: any;
-        onRefresh?: () => void;
-      };
-    },
-    'params'
-  >;
-}
+type ViewInvitesRouteParams = {
+  create: boolean;
+  editable: boolean;
+  data?: {
+    postID: string;
+    inviteId: string;
+    status?: string;
+  };
+  onRefresh?: () => void;
+};
 
-const ViewInvites: React.FC<CreatePostProps> = ({ route }) => {
-  const navigation = useNavigation<StackNavigationProp<any>>();
-  const map = useRef<any>(null);
+type ViewInvitesNavigationProp = StackNavigationProp<any>;
+
+const ViewInvites: React.FC = () => {
+  const navigation = useNavigation<ViewInvitesNavigationProp>();
+  const route =
+    useRoute<RouteProp<{ params: ViewInvitesRouteParams }, 'params'>>();
+  const map = useRef<MapView | null>(null);
+
   const [loading, setLoading] = useState<boolean>(false);
   const [status, setStatus] = useState<string | boolean>(false);
   const [eventName, setEventName] = useState<string>('');
@@ -41,9 +48,9 @@ const ViewInvites: React.FC<CreatePostProps> = ({ route }) => {
   const [errorText, setErrorText] = useState<string>('');
   const [dateOfEvent, setDateOfEvent] = useState<string>();
   const [timeOfEvent, setTimeOfEvent] = useState<string>();
-  const [lact, setLact] = useState(17.385);
-  const [longit, setLongit] = useState(78.4867);
-  const [region, setRegion] = useState({
+  const [lact, setLact] = useState<number>(17.385);
+  const [longit, setLongit] = useState<number>(78.4867);
+  const [region, setRegion] = useState<Region>({
     latitude: 17.385,
     longitude: 78.4867,
     latitudeDelta: 0.0922,
@@ -58,7 +65,7 @@ const ViewInvites: React.FC<CreatePostProps> = ({ route }) => {
     try {
       const snapshot = await firestore()
         .collection('posts')
-        .doc(route.params.data.postID)
+        .doc(route.params.data?.postID)
         .get();
       if (snapshot.exists()) {
         const data = snapshot.data();
@@ -68,7 +75,7 @@ const ViewInvites: React.FC<CreatePostProps> = ({ route }) => {
         setEventName(data.title);
         setLact(data.latitude);
         setLongit(data.longitude);
-        setStatus(route.params.data.status);
+        setStatus(route.params.data?.status || '');
         onChange(undefined, timestamp);
         setRegion({
           latitude: data.latitude,
@@ -106,9 +113,10 @@ const ViewInvites: React.FC<CreatePostProps> = ({ route }) => {
       setErrorText('');
       await firestore()
         .collection('invites')
-        .doc(route.params.data.inviteId)
+        .doc(route.params.data?.inviteId)
         .update(updateData);
       setLoading(false);
+      route.params.onRefresh?.();
       navigation.goBack();
     } catch (error: any) {
       console.log('Update Invite Error:', error);
@@ -128,6 +136,7 @@ const ViewInvites: React.FC<CreatePostProps> = ({ route }) => {
           onPress={() => navigation.goBack()}
         />
       </View>
+
       <View style={styles.container}>
         <View style={{ width: '100%', marginTop: 30 }}>
           <TextInput
@@ -141,6 +150,7 @@ const ViewInvites: React.FC<CreatePostProps> = ({ route }) => {
             underlineColorAndroid={Theme.colors.primaryColor}
             editable={false}
           />
+
           <TextInput
             style={[styles.textInput, styles.textTop]}
             onChangeText={setDescription}
@@ -154,6 +164,7 @@ const ViewInvites: React.FC<CreatePostProps> = ({ route }) => {
             underlineColorAndroid={Theme.colors.primaryColor}
             editable={false}
           />
+
           <View style={styles.cardSubView}>
             <View style={styles.iconedTimeView}>
               <Icon
@@ -165,6 +176,7 @@ const ViewInvites: React.FC<CreatePostProps> = ({ route }) => {
                 {dateOfEvent}
               </Text>
             </View>
+
             <View style={styles.iconedTimeView}>
               <Icon
                 name={'clock-outline'}
@@ -176,43 +188,37 @@ const ViewInvites: React.FC<CreatePostProps> = ({ route }) => {
               </Text>
             </View>
           </View>
+
           <View style={{ height: 300, marginTop: 20 }}>
             <MapView
               ref={map}
               provider={PROVIDER_GOOGLE}
               style={styles.map}
               initialRegion={region}
-              showsUserLocation={true}
+              showsUserLocation
             >
-              <Marker
-                coordinate={{
-                  latitude: lact,
-                  longitude: longit,
-                }}
-              />
+              <Marker coordinate={{ latitude: lact, longitude: longit }} />
             </MapView>
           </View>
-          {status == 'Pending' ? (
+
+          {status === 'Pending' ? (
             <View style={styles.buttonViews}>
               <TouchableOpacity
                 style={styles.acceptButton}
-                onPress={() => {
-                  updateStatus({ status: 'Accepted' });
-                }}
+                onPress={() => updateStatus({ status: 'Accepted' })}
               >
                 <Text style={styles.buttonsText}>Accept</Text>
               </TouchableOpacity>
+
               <TouchableOpacity
                 style={styles.rejectButton}
-                onPress={() => {
-                  updateStatus({ status: 'Rejected' });
-                }}
+                onPress={() => updateStatus({ status: 'Rejected' })}
               >
                 <Text style={styles.buttonsText}>Reject</Text>
               </TouchableOpacity>
             </View>
           ) : (
-            <Text style={styles.statusText}>Invite {status}</Text>
+            <Text style={styles.statusText}>Invite {String(status)}</Text>
           )}
         </View>
       </View>
@@ -242,71 +248,6 @@ const styles = StyleSheet.create({
   },
   textTop: {
     textAlignVertical: 'top',
-  },
-  pickerView: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    paddingTop: 15,
-  },
-  dateView: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    borderWidth: 2,
-    borderRadius: 5,
-    borderColor: Theme.colors.primaryColor,
-    padding: 10,
-  },
-  dateText: {
-    fontSize: Theme.fontSize.medium,
-    color: Theme.colors.primaryDark,
-  },
-  headerView: {
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    flexDirection: 'row',
-    margin: 15,
-  },
-  submitView: {
-    justifyContent: 'center',
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginVertical: 15,
-  },
-  submitButtonView: {
-    borderRadius: 5,
-    elevation: 2,
-  },
-  postText: {
-    color: Theme.colors.primaryLight,
-    fontSize: Theme.fontSize.regular,
-    paddingHorizontal: 15,
-    paddingVertical: 8,
-    fontFamily: Theme.fonts.medium,
-  },
-  errorText: {
-    color: Theme.colors.primaryColor,
-    paddingHorizontal: 10,
-    fontFamily: Theme.fonts.regular,
-    fontSize: Theme.fontSize.small,
-    textAlign: 'center',
-    marginTop: 20,
-  },
-  map: {
-    height: '100%',
-    width: '100%',
-  },
-  inviteButton: {
-    backgroundColor: Theme.colors.primaryDark,
-    marginHorizontal: 20,
-    marginVertical: 10,
-    borderRadius: 4,
-  },
-  inviteText: {
-    textAlign: 'center',
-    color: Theme.colors.primaryLight,
-    fontSize: Theme.fontSize.medium,
-    paddingVertical: 10,
   },
   cardSubView: {
     flexDirection: 'row',
@@ -357,5 +298,15 @@ const styles = StyleSheet.create({
     fontWeight: '800',
     textAlign: 'center',
     marginTop: 10,
+  },
+  headerView: {
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    flexDirection: 'row',
+    margin: 15,
+  },
+  map: {
+    height: '100%',
+    width: '100%',
   },
 });
