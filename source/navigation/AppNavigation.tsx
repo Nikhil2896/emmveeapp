@@ -95,7 +95,7 @@ const AppNavigation: React.FC = () => {
           fontSize: Theme.fontSize.large,
         }}
       >
-        EMMVEEE
+        EMMVEE
       </Text>
     );
   };
