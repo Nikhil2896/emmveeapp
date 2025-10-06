@@ -90,11 +90,11 @@ const CreatePost: React.FC<CreatePostProps> = ({ route }) => {
   const [dateOfEvent, setDateOfEvent] = useState<string>();
   const [timeOfEvent, setTimeOfEvent] = useState<string>();
   const [eventTimeStamp, setEventTimeStamp] = useState<number | string>('');
-  const [lact, setLact] = useState(17.385);
-  const [longit, setLongit] = useState(78.4867);
+  const [lact, setLact] = useState(12.946758);
+  const [longit, setLongit] = useState(77.577247);
   const [region, setRegion] = useState({
-    latitude: 17.385,
-    longitude: 78.4867,
+    latitude: 12.946758,
+    longitude: 77.577247,
     latitudeDelta: 0.0922,
     longitudeDelta: 0.0421,
   });
@@ -263,6 +263,12 @@ const CreatePost: React.FC<CreatePostProps> = ({ route }) => {
   };
 
   const getLocation = (data: CoordinateEvent) => {
+    console.log(
+      '*******************',
+      data.nativeEvent.coordinate.latitude,
+      data.nativeEvent.coordinate.longitude,
+    );
+
     if (editable) {
       setLact(data.nativeEvent.coordinate.latitude);
       setLongit(data.nativeEvent.coordinate.longitude);
@@ -324,7 +330,7 @@ const CreatePost: React.FC<CreatePostProps> = ({ route }) => {
         const invites = {
           postedUserId: user?.uid,
           postedUserEmail: user?.email,
-          postedUserName: user?.displayName,
+          postedUserName: user?.displayName || 'Someone',
           postedFcm: token,
           eventTimeStamp: eventTimeStamp,
           createdAt: new Date().toString(),
@@ -573,7 +579,6 @@ const CreatePost: React.FC<CreatePostProps> = ({ route }) => {
               style={styles.inviteButton}
               onPress={() => {
                 setModalVisible(true);
-                console.log(')))))))))))', InvitedUser);
               }}
             >
               <Text style={styles.inviteText}>Invite a Friend</Text>

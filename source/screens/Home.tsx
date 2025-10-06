@@ -59,7 +59,7 @@ const Home: React.FC<HomeProps> = props => {
     const dataList: PostItem[] = [];
     setErrorText('');
     try {
-      const snapshot = await fbQuery.limit(5).get();
+      const snapshot = await fbQuery.limit(10).get();
       setLastVisible(snapshot.docs[snapshot.docs.length - 1] || null);
       snapshot.forEach(doc => {
         const data = doc.data();
@@ -102,7 +102,6 @@ const Home: React.FC<HomeProps> = props => {
 
   const onPostClicked = async (data: PostItem) => {
     props.navigation.navigate(Routes.AdditionalStack, {
-      // screen: data.userId === user?.uid ? Routes.CreatePost : Routes.ViewPost,
       screen: Routes.CreatePost,
       params: {
         from: Routes.Home,
